@@ -3,6 +3,7 @@
 #include <linux/proc_fs.h>
 #include <linux/vmalloc.h>
 #include <linux/string.h>
+#include <linux/sched.h>
 #include <asm/uaccess.h>
 
 static struct proc_dir_entry *proc_entry;
