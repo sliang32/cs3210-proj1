@@ -39,8 +39,9 @@ long long getRandNumber(int tid, struct process_id *procID){
 	struct thread_id *head;
 
 	long long seed, nextSeed;
-
-	head = list_entry(temp1,&procID->threds);
+	list_for_each(temp1, &procID->threads){
+		head = list_entry(temp1, struct thread_id, list);
+	}
 	list_for_each(temp2, &head->list){
 		traverse_thread = list_entry(temp2, struct thread_id, list);
 		if(traverse_thread->tid == head->current_thread){
@@ -50,6 +51,7 @@ long long getRandNumber(int tid, struct process_id *procID){
 			seed = next_seed;
 			traverse_thread->seed = next_seed;
 			if(traverse_thread->tid == tid){
+				head->current_thread = tid;
 				return next_seed;
 			}
 			next_seed = (seed * MULTIPLIER + ADDER) % PMOD;		
@@ -61,6 +63,7 @@ long long getRandNumber(int tid, struct process_id *procID){
 			seed = next_seed;
 			traverse_thread->seed = next_seed;
 			if(traverse_thread->tid == tid){
+				head->current_thread = tid;
 				return next_seed;
 			}
 			next_seed = (seed * MULTIPLIER + ADDER) % PMOD;		
@@ -76,7 +79,8 @@ void setSeed(long long seed, struct process_id *procID){
 	struct thread_id *head;
 
 	long long nextSeed = seed;
-	head = list_entry(temp1,&procID->threds);
+	
+	head = procID->threads;
 	list_for_each(temp2, &head->list){
 		traverse_thread = list_entry(temp2, struct thread_id, list);
 		seed = next_seed;
