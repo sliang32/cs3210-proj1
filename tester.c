@@ -59,6 +59,7 @@ unsigned long long lfprng(){
 	FILE *fp = fopen("/proc/lfprng", "r");
 	fscanf(fp, "%llu", rand);
 	fclose(fp);
+	return rand;
 }
 
 double myrandom()
