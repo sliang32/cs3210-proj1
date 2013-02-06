@@ -11,6 +11,7 @@
 #include <linux/cdev.h>
 
 static struct proc_dir_entry *proc_entry;
+struct process_id* procID;
 
 static const long long MULTIPLIER = 764261123;
 static const long long PMOD = 2147483647;
