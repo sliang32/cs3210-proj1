@@ -1,30 +1,39 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
+#include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/vmalloc.h>
 #include <linux/string.h>
 #include <linux/sched.h>
+#include <linux/string.h>
 #include <asm/uaccess.h>
+#include <linux/current.h>
+#include <linux/cdev.h>
 
 static struct proc_dir_entry *proc_entry;
 
-int lfprng_read_proc(){
+struct process_id{
+	int pid;
+	int current_thread;
+	struct list_head threads;
+	long long seed;
+	boolean updated;
 }
 
-int lfprng_write_proc(){
+struct thread_id{
+	int tid;
+	long long seed;
+	struct list_head thread_list;
 }
 
-void create_lfprng(){
-}
 
-void calc_lfprng(){
-}
-
-void seed(){
-//	get thread number => check what is omp_get_thread_num and omp_get_num_threads
-//	if no seed input, pick a random seed
-//	set each thread a seed(seedn2 = seedn1*mult % PMOD)
-//	figure out random last
+long long getRandNumber(int pid, int tid, long long seed, struct process_id procID){
+	struct list_head *temp;
+	struct thread_id *traverse_thread;
+	list_for_each(temp, &procID.threds){
+		traverse_thread = list_entry();
+	}
+	
 }
 
 static int __init lfprng_module_init(void){
