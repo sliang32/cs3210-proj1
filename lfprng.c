@@ -12,6 +12,10 @@
 
 static struct proc_dir_entry *proc_entry;
 
+static const long long MULTIPLIER = 764261123;
+static const long long PMOD = 2147483647;
+static const long long ADDER = 0;
+
 struct process_id{
 	int pid;
 	int current_thread;
@@ -27,13 +31,58 @@ struct thread_id{
 }
 
 
-long long getRandNumber(int pid, int tid, long long seed, struct process_id procID){
-	struct list_head *temp;
+long long getRandNumber(int tid, struct process_id *procID){
+	struct list_head *temp1;
+	struct list_head *temp2;
+
 	struct thread_id *traverse_thread;
-	list_for_each(temp, &procID.threds){
-		traverse_thread = list_entry();
+	struct thread_id *head;
+
+	long long seed, nextSeed;
+
+	head = list_entry(temp1,&procID->threds);
+	list_for_each(temp2, &head->list){
+		traverse_thread = list_entry(temp2, struct thread_id, list);
+		if(traverse_thread->tid == head->current_thread){
+			seed = traverse_thread->seed;
+			next_seed = (seed * MULTIPLIER + ADDER) % PMOD;
+		}else if(traverse_thread->tid > head->current_thread){
+			seed = next_seed;
+			traverse_thread->seed = next_seed;
+			if(traverse_thread->tid == tid){
+				return next_seed;
+			}
+			next_seed = (seed * MULTIPLIER + ADDER) % PMOD;		
+		}
 	}
-	
+	list_for_each(temp2, &head->list){
+		traverse_thread = list_entry(temp2, struct thread_id, list);
+		if(traverse_thread->tid <= tid){
+			seed = next_seed;
+			traverse_thread->seed = next_seed;
+			if(traverse_thread->tid == tid){
+				return next_seed;
+			}
+			next_seed = (seed * MULTIPLIER + ADDER) % PMOD;		
+		}
+	}
+	return 0;
+}
+
+void setSeed(long long seed, struct process_id *procID){
+	struct list_head *temp1;
+	struct list_head *temp2;
+	struct thread_id *traverse_thread;
+	struct thread_id *head;
+
+	long long nextSeed = seed;
+	head = list_entry(temp1,&procID->threds);
+	list_for_each(temp2, &head->list){
+		traverse_thread = list_entry(temp2, struct thread_id, list);
+		seed = next_seed;
+		traverse_thread->seed = next_seed;
+		next_seed = (seed * MULTIPLIER + ADDER) % PMOD;
+	}
 }
 
 static int __init lfprng_module_init(void){
