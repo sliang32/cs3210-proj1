@@ -31,6 +31,32 @@ struct thread_id{
 	struct list_head thread_list;
 }
 
+static int lfprng_read_proc(char *page, char **start, off_t off, int count, int *eof, void *data)
+{  
+	long long val = getRandNumber(current->tgid, current->pid, procID.seed);
+
+	int length = sprintf(page, "%lld", val);
+
+  	return length;
+}//end lfprng_read_proc function
+
+static int lfprng_write_proc(struct file *file, const char *buf, usingned long count, void *data)
+{
+    	static const int SEED_SIZE = sizeof(long long);
+	long long seed;
+
+	if(count> SEED_SIZE)
+	{
+		count = SEED_SIZE;
+	}//end if statement
+        if(copy_from_user(&seed, buf, count))
+    	{
+    		return -EFAULT;
+    	}
+	setSeed(seed, current->tgid);
+	
+	return count;
+}//end lfprng_write_proc function
 
 long long getRandNumber(int tid, struct process_id *procID){
 	struct list_head *temp1;
