@@ -58,6 +58,17 @@ static int lfprng_write_proc(struct file *file, const char *buf, usingned long c
 	return count;
 }//end lfprng_write_proc function
 
+void create_New_Proc(int pid)//don't need to allocate memory for every thread. Just the first one, and then the rest will be handled by linked list
+{
+	procID.pid = pid;
+	procID.current_thread = newProc_first_thread;
+	for(rest of threads in newProc)
+	{
+		//add thread and it’s information
+	}
+	newProc.updated = true;
+}//end create_New_Proc function
+
 long long getRandNumber(int tid, struct process_id *procID){
 	struct list_head *temp1;
 	struct list_head *temp2;
@@ -118,6 +129,7 @@ void setSeed(long long seed, struct process_id *procID){
 
 static int __init lfprng_module_init(void){
 	int rv = 0;
+	struct process_id *new_process;
 	proc_entry = create_proc_entry("lfprng", 0666, NULL);
 	if(proc_entry == NULL){
 		rv = -ENOMEN
@@ -126,12 +138,26 @@ static int __init lfprng_module_init(void){
 		proc_entry->owner = THIS_MODULE;
 		proc_entry->read_proc = lfprng_read_proc;
 		proc_entry->write_proc = lfprng_write_proc;
+		new_process = vmalloc(sizeof(*new_process);
+		procID = new_process;
+		procID->pid = 0;
 		printk(KERN_INFO "lfprng_module_init called. Module now loaded.\n");
 	}
 	return rv;
 }
 
 static void __exit lfprng_module_cleanup(void){
+	struct list_head *temp;
+	struct thread_id *head;
+	struct thread_id *traverse_thread;
+	head = procID->threads;
+	printk(KERN_INFO "free the list");
+	list_for_each(temp, &head->list){
+		traverse_thread = list_entry(temp, struct thread_id, list);
+		list_del(temp);
+		vfree(traverse_thread);
+	}
+	vfree(procID);
 	remove_proc_entry(lfprng, proc_entry);
 	printK(KERN_INFO "lfprng_module_cleanup called. Module unloaded");
 }
